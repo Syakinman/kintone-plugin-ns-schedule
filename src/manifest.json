@@ -3,11 +3,11 @@
   "version": "1",
   "type": "APP",
   "name": {
-    "ja": "fullcalendar6.0 12months view",
+    "ja": "鳴本カレンダー",
     "en": "kintone Event Calendar_v6.0 plug-in"
   },
   "description": {
-    "ja": "kintoneとFullCalendarを連携するプラグインです。",
+    "ja": "FullCalendarV6と連携するプラグインです。",
     "en": "This plugin cooperate with FullCalendar"
   },
   "icon": "image/icon.png",

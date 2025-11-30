@@ -32,18 +32,31 @@
 
 */
 
-.fc-event-title{
- padding:24px 0;
- text-align: center;
+/* FullCalendar 月视图：日期数字放左上角 */
+.fc .fc-daygrid-day-top {
+  flex-direction: row !important; /* 默认是倒向排列,通过此设置改回正向排列 */
+  justify-content: flex-start !important;
+  /* padding-left: 8px; */
+}
+
+/* 日期数字字体大小可选 */
+.fc .fc-daygrid-day-number {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fc-event-title {
+  padding: 24px 0;
+  text-align: center;
 }
 .fc-event {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 /* 除标题以外的星期天 */
-td.fc-day-sun{
-    background-color:pink;
+td.fc-day-sun {
+  background-color: pink;
 }

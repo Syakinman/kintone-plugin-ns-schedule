@@ -203,7 +203,7 @@
           for (let i = 0; i < records.length; i++) {
             let className = "schedule1";
             let display_mode = "auto";
-            let backgroundColor = "#000";
+            let backgroundColor = "lightgreen";
             let editable = true;
 
             switch (records[i]["eventType"].value) {
@@ -291,17 +291,19 @@
           //     backgroundColor: '#f00',
           //     editable: false,
           // },
-          //   {
-          //     // googleCalendarApiKey: "AIzaSyDpSbmakGoQamCZsxTrPiqFzh_MSysMchY",
-          //     // 此google日历获取的是日本公共节假日及传统日子(如七五三)的公共日历,由于七五三等不属于日本法定假日因此此日历不能使用
-          //     googleCalendarId: "ja.japanese#holiday@group.v.calendar.google.com",
-          //     className: 'jp-holiday',
-          //     display:'background',
-          //     color: '#7A7A7A',
-          //     textColor: '#7A7A7A',
-          //     backgroundColor: '#f00',
-          //     editable: false
-          // },
+          {
+            // googleCalendarApiKey: "AIzaSyDpSbmakGoQamCZsxTrPiqFzh_MSysMchY",
+            // 此google日历获取的是日本公共节假日及传统日子(如七五三)的公共日历,由于七五三等不属于日本法定假日因此此日历不能使用
+            //ja.japanese.official#holiday@group.v.calendar.google.com 祝日のみ
+            //ja.japanese#holiday@group.v.calendar.google.com　祝日及びその他の行事
+            googleCalendarId: "ja.japanese.official#holiday@group.v.calendar.google.com",
+            className: "jp-holiday",
+            display: "background",
+            color: "#f00",
+            textColor: "#f00",
+            backgroundColor: "#f00",
+            editable: false,
+          },
           // {
           //     // googleCalendarApiKey: "AIzaSyDpSbmakGoQamCZsxTrPiqFzh_MSysMchY",
           //     googleCalendarId: "narumoto.sai@gmail.com",
@@ -345,19 +347,19 @@
               title: `<strong>新規イベント登録</u></strong>`,
               width: 600,
               html: `
-                                <div style="text-align:left; padding: 10px 0;">
-                                    <div style="margin-bottom: 10px;">日付：${info.dateStr}</div>
-                                    <div style="display: flex; align-items: center;">
-                                        <span style="margin-right: 10px;">
-                                            種類：
-                                            <select name="eventType" id="eventType">
-                                                ${htmlTypeOptions}
-                                            </select>
-                                        </span>
-                                        <input id="eventTitle" disabled>
-                                    </div>
-                                </div>
-                            `,
+                  <div style="text-align:left; padding: 10px 0;">
+                      <div style="margin-bottom: 10px;">日付：${info.dateStr}</div>
+                      <div style="display: flex; align-items: center;">
+                          <span style="margin-right: 10px;">
+                              種類：
+                              <select name="eventType" id="eventType">
+                                  ${htmlTypeOptions}
+                              </select>
+                          </span>
+                          <input id="eventTitle" disabled>
+                      </div>
+                  </div>
+              `,
               showCancelButton: true,
               didOpen: () => {
                 const eventTypeSelect = document.getElementById("eventType");
@@ -413,20 +415,20 @@
                   title: `<strong><u>登録イベント変更</u></strong>`,
                   width: 600,
                   html: `
-                                        <div style="text-align:left; padding: 10px 0;">
-                                            <div>ＩＤ：${info.event.id}</div>
-                                            <div style="margin-bottom: 10px;">日付：<input id="dateModify" type = "date" value="${info.event.startStr}"></div>
-                                            <div style="display: flex; align-items: center;">
-                                                <span style="margin-right: 10px;">
-                                                    種類：
-                                                    <select name="eventType" id="eventType">
-                                                        ${htmlTypeOptions}
-                                                    </select>
-                                                </span>
-                                                <input id="eventTitle" disabled>
-                                            </div>
-                                        </div>
-                                    `,
+                      <div style="text-align:left; padding: 10px 0;">
+                          <div>ＩＤ：${info.event.id}</div>
+                          <div style="margin-bottom: 10px;">日付：<input id="dateModify" type = "date" value="${info.event.startStr}"></div>
+                          <div style="display: flex; align-items: center;">
+                              <span style="margin-right: 10px;">
+                                  種類：
+                                  <select name="eventType" id="eventType">
+                                      ${htmlTypeOptions}
+                                  </select>
+                              </span>
+                              <input id="eventTitle" disabled>
+                          </div>
+                      </div>
+                  `,
                   showCancelButton: true,
                   didOpen: () => {
                     const eventTypeSelect = document.getElementById("eventType");
@@ -479,36 +481,109 @@
               }
             }
           },
+
+          // eventDidMount：针对每个事件的渲染，适合单个事件的自定义处理。
           eventDidMount: function (info) {
-            // eventDidMount：针对每个事件的渲染，适合单个事件的自定义处理。
+            if (info.event.extendedProps.eventType === "鳴本休日" || info.event.extendedProps.eventType === "計画年休") {
+              const cell = info.el.closest(".fc-daygrid-day");
+              if (cell) {
+                cell.style.backgroundColor = "#ffcccc"; // ← 你想涂的颜色
+              }
+            }
           },
           eventsSet: function (events) {
-            // eventsSet：一组事件加载完成后触发，适合统计或批量处理。
-            // console.log(events);
-            events = {};
-            let cnt_jp_holiday = document.querySelectorAll(".jp-holiday").length;
-            if (cnt_jp_holiday) {
-              // document.getElementById('total-jp-holiday-days').textContent = cnt_jp_holiday;
-              // console.log(cnt_jp_holiday)
+            const currentYear = calendar.currentData.viewTitle.slice(0, 4);
+            const yearStart = new Date(`${currentYear}-01-01`);
+            const yearEnd = new Date(`${currentYear}-12-31T23:59:59`);
+
+            // ---- 日期集合（最终用这个算总天数）----
+            const holidaySet = new Set();
+            const sundaySet = new Set();
+            const holidaySundayOverlap = new Set();
+
+            // ---- 统计参数 ----
+            let jp_holiday = 0;
+            let ns_holiday = 0;
+            let annual_leave = 0;
+
+            // ---- ① 计算当年所有星期天 ----
+            let d = new Date(yearStart);
+            while (d <= yearEnd) {
+              if (d.getDay() === 0) {
+                const ds = d.toISOString().substring(0, 10);
+                sundaySet.add(ds);
+                holidaySet.add(ds);
+              }
+              d.setDate(d.getDate() + 1);
             }
+
+            // ---- ② 遍历所有事件（FullCalendar 加载的事件）----
+            events.forEach((ev) => {
+              const dateStr = ev.startStr;
+              const dateObj = new Date(dateStr);
+
+              // 只统计当年
+              if (dateObj < yearStart || dateObj > yearEnd) return;
+
+              const type = ev.extendedProps.eventType || "";
+              const desc = ev.extendedProps.description || "";
+              const sourceId = ev.source?.internalEventSource?.googleCalendarId || "";
+
+              // ---- Kintone: 鳴本休日 ----
+              if (type === "鳴本休日") {
+                ns_holiday++;
+                holidaySet.add(dateStr);
+              }
+
+              // ---- Kintone: 計画年休 ----
+              if (type === "計画年休") {
+                annual_leave++;
+                holidaySet.add(dateStr);
+              }
+
+              // ---- Google Calendar 法定祝日 ----
+              // 方法1：extendedProps.description === "祝日"
+              // 方法2：sourceId includes ja.japanese.official
+              if (desc === "祝日" || sourceId.includes("ja.japanese.official")) {
+                jp_holiday++;
+                holidaySet.add(dateStr);
+
+                // 判断是否与星期天重叠
+                if (sundaySet.has(dateStr)) {
+                  holidaySundayOverlap.add(dateStr);
+                }
+              }
+            });
+
+            // ---- ③ 最终总天数（唯一日期集合大小 - 重叠数）----
+            const total = holidaySet.size;
+
+            document.getElementById("summaryId").innerHTML = `
+    年間休日総日数：${total}日
+    （🎌祝日：${jp_holiday}日；
+    日曜日：${sundaySet.size}日；
+    鳴本休日：${ns_holiday}日；
+    計画年休：${annual_leave}日；
+    ※祝日と日曜が重ねる日：<span style="color:blue">△${holidaySundayOverlap.size}</span>日）
+  `;
           },
         }); //end of calendar
 
         calendar.render();
         calendar.setOption("height", window.innerHeight);
         // window.calendar=calendar;// 要放在render之后
-        let currentYear = calendar.currentData.viewTitle.slice(0, 4);
+        // let currentYear = calendar.currentData.viewTitle.slice(0, 4);
 
-        getSpecialDaysInfo(currentYear).then((obj) => {
-          document.getElementById("summaryId").innerHTML = `
-                    年間休日総日数：${obj.totalDayOffCount}日
-                    （祝日：${obj.jp_holiday_count}日；
-                    日曜日：${obj.all_sundays.length}日；
-                    鳴本休日：${obj.ns_holiday_count}日；
-                    計画年休：${obj.annual_paid_leave_count}日
-                    ※祝日と日曜が重ねる日：<span style="color:blue">△${obj.sundays_in_jp_holiday.length}</span>日）
-                     `;
-        });
+        // getSpecialDaysInfo(currentYear).then((obj) => {
+        //   document.getElementById("summaryId").innerHTML = `
+        //             年間休日総日数：${obj.totalDayOffCount}日
+        //             （🎌祝日：${obj.jp_holiday_count}日；
+        //             日曜日：${obj.all_sundays.length}日；
+        //             鳴本休日：${obj.ns_holiday_count}日；
+        //             計画年休：${obj.annual_paid_leave_count}日
+        //             ※祝日と日曜が重ねる日：<span style="color:blue">△${obj.sundays_in_jp_holiday.length}</span>日）
+        //              `;
+        // });
         resolve(event);
       });
     }).then(function () {
