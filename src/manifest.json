@@ -1,0 +1,35 @@
+{
+  "manifest_version": 1,
+  "version": "1",
+  "type": "APP",
+  "name": {
+    "ja": "fullcalendar6.0 12months view",
+    "en": "kintone Event Calendar_v6.0 plug-in"
+  },
+  "description": {
+    "ja": "kintoneとFullCalendarを連携するプラグインです。",
+    "en": "This plugin cooperate with FullCalendar"
+  },
+  "icon": "image/icon.png",
+  "homepage_url": {
+    "ja": "https://cybozu.dev/ja/kintone/tips/development/plugins/sample-plugin/eventcalendar-plugin/",
+    "en": "https://cybozu.dev/ja/kintone/tips/development/plugins/sample-plugin/eventcalendar-plugin/"
+  },
+  "desktop": {
+    "js": [
+      "https://js.cybozu.com/jquery/2.2.4/jquery.min.js",
+      "https://js.kintone.com/luxon/3.0.3/luxon.min.js",
+      "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js",
+      "https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.6/index.global.min.js",
+      "https://cdn.jsdelivr.net/npm/sweetalert2@11",
+      "js/customize.js"
+    ],
+    "css": ["css/customize.css"]
+  },
+  "config": {
+    "html": "html/config.html",
+    "js": ["https://js.cybozu.com/jquery/1.11.1/jquery.min.js", "https://js.cybozu.com/jsrender/1.0.5/jsrender.min.js", "js/config.js"],
+    "css": ["css/config.css", "css/51-modern-default.css"],
+    "required_params": ["name", "start_datetime"]
+  }
+}

@@ -1,0 +1,49 @@
+/* .ns-holiday{
+    background-color: pink !important;
+} */
+/* 日曜日 */
+/* .fc-day-sun {
+    background: rgb(240, 169, 37);
+}
+*/
+
+/*
+.fc-daygrid-day:has(.fc-event){
+	background-color: pink;
+}
+
+/*
+.fc-head .fc-sat {
+    background: rgb(211, 237, 251);
+}
+
+
+.fc-today {
+    background: rgb(255, 255, 204);
+}
+
+.fc-center {
+    margin-right: 1.75em;
+}
+
+.fc-clear {
+    clear: none;
+}
+
+*/
+
+.fc-event-title{
+ padding:24px 0;
+ text-align: center;
+}
+.fc-event {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* 除标题以外的星期天 */
+td.fc-day-sun{
+    background-color:pink;
+}
